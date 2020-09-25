@@ -1,0 +1,388 @@
+<html>
+<div id="topdiv" >
+  <div id="title">
+    <h1>Image Filters</h1>
+  </div>  
+<canvas id="can">
+  </canvas>
+<div id="file">
+  <input type="file" multiple=false accept="image/*" id="finput" onchange="upload()">
+</div>
+<script
+src="https://www.dukelearntoprogram.com/course1/common/js/image/SimpleImage.js">
+</script>
+  <p><b>Filters:</b></p>
+  <div id="filters">
+  <input type="button" value="Make Gray" onclick="gray()" class="button">
+   <input type="button" value="Make Red"
+onclick="red()" class="button">
+   <input type="button" value="Make DarkRed" onclick="darkred()" class="button">
+     <input type="button" value="Make Negative" onclick="negative()" class="button">
+  <input type="button" value="Make Rainbow" onclick="rainbow()" class="button">
+    <input type="button" value="Reset" onclick="reset()"  id="reset" class="button">
+  </div>
+</div>
+</html>
+
+
+<style>
+#title{
+  background-color : brown;
+  border : 3px solid black;
+  text-align : center;
+  border-radius : 25px;
+  width : 300px;
+  margin : auto;
+  padding : 0px;
+  font-family : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-variant : small-caps;
+  color: white;
+}
+#topdiv{
+  text-align : center;
+  background-image : linear-gradient(thistle,rgb(100, 20, 108));
+  padding:25px;
+  border :5px solid;
+}
+canvas{
+  border:1px solid ;
+  height:350px;
+  margin:25px;
+}
+#finput{
+   background-color : lightblue;
+  border : 1px solid black;
+  border-radius : 5px;
+  width : 300px;
+  margin : auto;
+  padding : 10px;
+  font-family : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+#filters{
+  background-color : lightblue;
+  padding : 10px;
+  border : 1px solid black;
+  border-radius : 5px;
+  width : 900px;
+  margin : auto;
+}
+.button{
+  border : 2px o black;
+  margin : 10px;
+  font-size : 20px;
+  background-color : dimgray;
+  padding : 7px;
+  border-radius : 10px;
+  font-family : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+p{
+  font-size:25px;
+  color : black;
+  font-family : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-variant : small-caps;
+}
+#reset{
+  background-color : tomato;
+}
+</style>
+
+<script>
+var img=null;
+var grayimg=null;
+var redimg=null;
+var darkredimg=null;
+var negativeimg=null;
+var rainbowimg=null;
+var  imgcanvas = document.getElementById("can");
+
+function upload(){
+  var file = document.getElementById("finput");
+  img = new SimpleImage(file);
+  grayimg = new SimpleImage(file);
+  redimg = new SimpleImage(file);
+  darkredimg = new SimpleImage(file);
+  negativeimg = new SimpleImage(file);
+  rainbowimg = new SimpleImage(file);
+   img.drawTo(imgcanvas);
+}
+
+function gray(){
+  if(imageIsLoaded(grayimg)){
+    filterGray();
+    grayimg.drawTo(imgcanvas);
+  }
+  else
+    alert("Image is not Loaded");
+}
+
+function red(){
+  if(imageIsLoaded(redimg)){
+    filterRed();
+    redimg.drawTo(imgcanvas);
+  }
+  else
+    alert("Image is not Loaded");
+}
+
+function darkred(){
+  if(imageIsLoaded(darkredimg)){
+    filterDarkred();
+    darkredimg.drawTo(imgcanvas);
+  }
+  else
+    alert("Image is not Loaded");
+}
+
+function negative(){
+  if(imageIsLoaded(negativeimg)){
+    filterNegative();
+    negativeimg.drawTo(imgcanvas);
+  }
+  else
+    alert("Image is not Loaded");
+}
+
+function rainbow(){
+  if(imageIsLoaded(rainbowimg)){
+    filterRainbow();
+    rainbowimg.drawTo(imgcanvas);
+  }
+  else
+    alert("Image is not Loaded");
+}
+
+function imageIsLoaded(img) {
+  var result;
+  if(img == null || (!img.complete()))
+    result = false;
+  else
+    result = true;
+  return result;
+}
+
+function filterGray() {
+  for (var pixel of grayimg.values() )  {
+    var avg = (pixel.getRed() + pixel.getGreen() + pixel.getBlue())/3;
+        pixel.setRed(avg);
+        pixel.setGreen(avg);
+        pixel.setBlue(avg);   
+  }         
+}
+  
+function filterRed(){
+  for(var pixel of redimg.values()){
+        pixel.setRed(255);
+  }         
+}
+
+function filterDarkred(){
+   for (var pixel of darkredimg.values() )  {
+    var avg = (pixel.getRed() + pixel.getGreen() + pixel.getBlue())/3;
+     if(avg<128){
+        pixel.setRed(2*avg);
+        pixel.setGreen(0);
+        pixel.setBlue(0);   
+   }
+     else{
+       pixel.setRed(255);
+        pixel.setGreen((2*avg)-255);
+        pixel.setBlue((2*avg)-255);   
+     }
+   }
+}
+
+function filterNegative(){
+  var context = imgcanvas.getContext("2d"); context.clearRect(0,0,can.width,can.height);
+  for(var pixel of negativeimg.values()){
+    var r = 255 - pixel.getRed();
+    var g = 255 - pixel.getGreen();
+    var b = 255 - pixel.getBlue();
+    
+    pixel.setRed(r);
+    pixel.setGreen(g);
+    pixel.setBlue(b);
+  }
+  negativeimg.drawTo(imgcanvas);
+}
+
+function  filterRainbow(){
+  var height=rainbowimg.getHeight();
+  var y=0;
+  for(var pixel of rainbowimg.values()){
+  y = pixel.getY();
+  if(y<(height)/7){
+    rainbowRed(pixel);
+     }
+  else if(y<(2*height)/7){
+     rainbowOrange(pixel);
+  }
+  else if(y<(3*height)/7){
+     rainbowYellow(pixel);
+  }
+  else if(y<(4*height)/7){
+     rainbowGreen(pixel);
+  }
+  else if(y<(5*height)/7){                        rainbowBlue(pixel);  
+  }
+  else if(y<(6*height)/7){                        rainbowIndigo(pixel);                     }
+  else{rainbowViolet(pixel);
+  }
+ }
+  rainbowimg.drawTo(imgcanvas);
+}
+
+function rainbowRed(pixel){
+  var avg=0;
+  var red=null;
+  var green=null;
+  var blue=null;
+  red =pixel.getRed();
+  green= pixel.getGreen();
+  blue= pixel.getBlue();
+  avg=(red+green+blue)/3;
+    if(avg<128){
+    pixel.setRed(avg*2);
+    pixel.setGreen(0);
+    pixel.setBlue(0);
+    }
+  else if(avg>128){
+      pixel.setRed(255);
+      pixel.setGreen(2*avg-255);
+      pixel.setBlue(2*avg-255);
+    }
+}
+
+function rainbowOrange(pixel){
+  var avg=0;
+  var red=null;
+  var green=null;
+  var blue=null;
+  red =pixel.getRed();
+  green=pixel.getGreen();
+  blue=pixel.getBlue();
+  avg=(red+green+blue)/3;
+    if(avg<128){
+    pixel.setRed(avg*2);
+    pixel.setGreen(0.8*avg);
+    pixel.setBlue(0);
+    }
+  else if(avg>128){
+      pixel.setRed(255);
+      pixel.setGreen(1.2*avg-51);
+      pixel.setBlue(2*avg-255);
+    }
+}
+
+function rainbowYellow(pixel){
+  var avg=0;
+  var red=null;
+  var green=null;
+  var blue=null;
+  red =pixel.getRed();
+  green=pixel.getGreen();
+  blue=pixel.getBlue();
+  avg=(red+green+blue)/3;
+    if(avg<128){
+    pixel.setRed(avg*2);
+    pixel.setGreen(2*avg);
+    pixel.setBlue(0);
+    }
+  else if(avg>128){
+      pixel.setRed(255);
+      pixel.setGreen(255);
+      pixel.setBlue(2*avg-255);
+    }
+}
+
+function rainbowGreen(pixel){
+  var avg=0;
+  var red=null;
+  var green=null;
+  var blue=null;
+  red =pixel.getRed();
+  green=pixel.getGreen();
+  blue=pixel.getBlue();
+  avg=(red+green+blue)/3;
+    if(avg<128){
+    pixel.setRed(0);
+    pixel.setGreen(2*avg);
+    pixel.setBlue(0);
+    }
+  else if(avg>128){
+      pixel.setRed(2*avg-255);
+      pixel.setGreen(255);
+      pixel.setBlue(2*avg-255);
+    }
+}
+
+function rainbowBlue(pixel){
+  var avg=0;
+  var red=null;
+  var green=null;
+  var blue=null;
+  red =pixel.getRed();
+  green=pixel.getGreen();
+  blue=pixel.getBlue();
+  avg=(red+green+blue)/3;
+    if(avg<128){
+    pixel.setRed(0);
+    pixel.setGreen(0);
+    pixel.setBlue(2*avg);
+    }
+  else if(avg>128){
+      pixel.setRed(2*avg-255);
+      pixel.setGreen(2*avg-255);
+      pixel.setBlue(255);
+    }
+}
+
+function rainbowIndigo(pixel){
+  var avg=0;
+  var red=null;
+  var green=null;
+  var blue=null;
+  red =pixel.getRed();
+  green=pixel.getGreen();
+  blue=pixel.getBlue();
+  avg=(red+green+blue)/3;
+    if(avg<128){
+    pixel.setRed(0.8*avg);
+    pixel.setGreen(0);
+    pixel.setBlue(2*avg);
+    }
+  else if(avg>128){
+      pixel.setRed(1.2*avg -51);
+      pixel.setGreen( 2*avg-255);
+      pixel.setBlue(255);
+    }
+}
+
+function rainbowViolet(pixel){
+  var avg=0;
+  var red=null;
+  var green=null;
+  var blue=null;
+  red =pixel.getRed();
+  green=pixel.getGreen();
+  blue=pixel.getBlue();
+  avg=(red+green+blue)/3;
+    if(avg<128){
+    pixel.setRed(1.6*avg);
+    pixel.setGreen(0);
+    pixel.setBlue(1.6*avg);
+    }
+  else if(avg>128){
+      pixel.setRed(0.4*avg+153);
+      pixel.setGreen(2*avg-255);
+      pixel.setBlue(0.4*avg+153);
+    }
+}
+
+function reset(){
+  if(imageIsLoaded(img)){
+    img.drawTo(imgcanvas)
+  }
+  else
+    alert("Image is not loaded");
+}
+</script>
